@@ -1,97 +1,96 @@
 "use client";
 import React, { useState } from "react";
-import { Card, Button, Modal } from "react-bootstrap";
-
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
 export default function MessageCard({ message, onMessageDelete, authToken }) {
-  const [show, setShow] = useState(false);
-
-  function handleClose() {
-    setShow(false);
-  }
-
-  function handleShow() {
-    setShow(true);
-  }
+  const [open, setOpen] = useState(false);
 
   async function handleDeleteConfirm() {
-    const messageId = message._id;
-    axios
-      .post("/api/delete-message", { messageId, authToken })
-      .then((result) => {
-        if ((result.data.Success = true)) {
-          toast.success(result.data.msg);
-          onMessageDelete(messageId);
-          handleClose();
-        }
+    try {
+      const messageId = message._id;
+      const result = await axios.post("/api/delete-message", {
+        messageId,
+        authToken,
       });
+
+      if (result.data.Success === true) {
+        toast.success(result.data.msg);
+        onMessageDelete(messageId);
+        setOpen(false);
+      }
+    } catch (error) {
+      toast.error("Failed to delete the message.");
+    }
   }
 
   function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const month = months[date.getUTCMonth()];
-    const day = date.getUTCDate();
-    const year = date.getUTCFullYear();
-    let hours = date.getUTCHours();
-    const minutes = date.getUTCMinutes().toString().padStart(2, "0");
-    const seconds = date.getUTCSeconds().toString().padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-
-    const time = `${hours}:${minutes}:${seconds} ${ampm}`;
-    return `${month} ${day}, ${year}, ${time}`;
+    const options = {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+      timeZone: "UTC",
+    };
+    return date.toLocaleString("en-US", options);
   }
 
   const formattedTimestamp = formatTimestamp(message.createdAt);
 
   return (
-    <Card className="mb-4">
-      <Card.Header>
-        <div className="d-flex justify-content-between align-items-center">
-          <Card.Title>{message.content}</Card.Title>
-          <Button variant="danger" onClick={handleShow}>
-            <X className="w-5 h-5" />
-          </Button>
+    <Card className="mb-4 w-full max-w-2xl mx-auto">
+      <CardHeader className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <CardTitle className="text-lg">{message.content}</CardTitle>
+          <CardDescription className="text-sm text-muted-foreground">
+            {formattedTimestamp}
+          </CardDescription>
         </div>
-        <small className="text-muted">{formattedTimestamp}</small>
-      </Card.Header>
+        <Button variant="destructive" size="icon" onClick={() => setOpen(true)}>
+          <X className="w-4 h-4" />
+        </Button>
+      </CardHeader>
+      <CardContent></CardContent>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Are you absolutely sure?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          This action cannot be undone. This will permanently delete your
-          account and remove your data from our servers.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleDeleteConfirm}>
-            Continue
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+          </DialogHeader>
+          <div className="text-sm text-muted-foreground">
+            This action cannot be undone. This will permanently delete your
+            message.
+          </div>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

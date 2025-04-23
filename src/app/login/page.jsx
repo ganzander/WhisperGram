@@ -3,8 +3,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
-import "../../assets/login.css";
-import Navbar from "src/components/Navbar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 export default function Login() {
   const router = useRouter();
@@ -16,27 +24,30 @@ export default function Login() {
   async function handlePasswordSubmit(event) {
     event.preventDefault();
     const { email, password } = loginCredentials;
+
     if (!email || !password) {
       toast.error("Please fill in the form completely");
-    } else {
-      axios.post("/api/signin", { email, password }).then((result) => {
-        if (result.data.Success === true) {
-          localStorage.setItem(
-            "AuthToken",
-            JSON.stringify(result.data.AuthToken)
-          );
-          toast.success(result.data.msg);
-          router.push("/");
-        } else {
-          toast.error(result.data.msg);
-        }
-      });
-
-      setLoginCredentials({
-        email: "",
-        password: "",
-      });
+      return;
     }
+
+    try {
+      const result = await axios.post("/api/signin", { email, password });
+
+      if (result.data.Success === true) {
+        localStorage.setItem(
+          "AuthToken",
+          JSON.stringify(result.data.AuthToken)
+        );
+        toast.success(result.data.msg);
+        router.push("/");
+      } else {
+        toast.error(result.data.msg);
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+
+    setLoginCredentials({ email: "", password: "" });
   }
 
   function onChange(event) {
@@ -47,68 +58,63 @@ export default function Login() {
   }
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center min-vh-100"
-      style={{ backgroundColor: "#1a202c" }}
-    >
-      <div className="form-container bg-white p-5 rounded">
-        <h1 className="text-center">Welcome Back to WhisperGram</h1>
-        <p className="text-center">Sign in to continue your secret whispers</p>
-        <form onSubmit={handlePasswordSubmit}>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              value={loginCredentials.email}
-              onChange={onChange}
-              autoComplete="off"
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              value={loginCredentials.password}
-              onChange={onChange}
-              autoComplete="off"
-              required
-            />
-            <small
-              className="linkForgotPassword text-center justify-content-center text-black mb-2"
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                router.push("/loginOTP");
-              }}
+    <div className="flex min-h-screen items-center justify-center bg-black p-4">
+      <Card className="w-full max-w-md shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">
+            Welcome Back to WhisperGram
+          </CardTitle>
+          <CardDescription className="text-center">
+            Sign in to continue your secret whispers
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={loginCredentials.email}
+                onChange={onChange}
+                autoComplete="off"
+                required
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={loginCredentials.password}
+                onChange={onChange}
+                autoComplete="off"
+                required
+              />
+              <p
+                className="mt-2 text-sm text-gray-300 cursor-pointer underline text-end"
+                onClick={() => router.push("/loginOTP")}
+              >
+                Forgot Password?
+              </p>
+            </div>
+            <Button type="submit" className="w-full">
+              Log In
+            </Button>
+          </form>
+          <p className="text-center text-sm mt-4">
+            Not Registered?{" "}
+            <span
+              className="text-gray-300 cursor-pointer underline"
+              onClick={() => router.push("/signup")}
             >
-              Forgot Password
-            </small>
-          </div>
-          <button type="submit" className="btn btn-dark w-100">
-            Log In
-          </button>
-        </form>
-        <p className="text-center mt-3">
-          Not Registered?{" "}
-          <span
-            className="text-black"
-            style={{ cursor: "pointer" }}
-            onClick={() => router.push("/signup")}
-          >
-            Sign Up
-          </span>
-        </p>
-      </div>
+              Sign Up
+            </span>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
-import "../../assets/login.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
-import Navbar from "src/components/Navbar";
+import { Check, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Signup() {
   const router = useRouter();
@@ -23,136 +24,127 @@ export default function Signup() {
     const { name, email, password } = credentials;
     if (!name || !email || !password) {
       toast.error("Please fill in the form completely");
-    } else {
-      axios
-        .post("/api/createuser", {
-          name,
-          email,
-          password,
-        })
-        .then((result) => {
-          console.log(result);
-          if (result.data.Success === true) {
-            toast.success("Successfully registered");
-            router.push("/login");
-          } else {
-            toast.error(result.data.message);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      setCredentials({
-        name: "",
-        email: "",
-        password: "",
-      });
+      return;
     }
+
+    try {
+      const result = await axios.post("/api/createuser", {
+        name,
+        email,
+        password,
+      });
+
+      if (result.data.Success) {
+        toast.success("Successfully registered");
+        router.push("/login");
+      } else {
+        toast.error(result.data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong. Try again.");
+    }
+
+    setCredentials({ name: "", email: "", password: "" });
   }
 
   useEffect(() => {
     const { name } = credentials;
+    if (!name) return;
+
     axios
       .post("/api/check-username-unique", { name })
       .then((result) => {
-        if (result.data.Success === true) {
-          setIsAvailable(result.data.Success);
-        } else {
-          setIsAvailable(result.data.Success);
-        }
+        setIsAvailable(result.data.Success);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => console.error(err));
   }, [credentials.name]);
 
-  function onChange(event) {
+  const onChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
-  }
+  };
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center min-vh-100"
-      style={{ backgroundColor: "#1a202c" }}
-    >
-      <div className="form-container bg-white p-5 rounded">
-        <h1 className="text-center">Join WhisperGram</h1>
-        <p className="text-center">
-          Sign up to start your whisperous adventure
-        </p>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3 name-available-container">
-            <label htmlFor="username" className="form-label">
-              Username
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="username"
-              name="name"
-              onChange={onChange}
-              value={credentials.name}
-              autoComplete="off"
-              required
-            />
-            <small>
-              {isAvailable ? (
-                <FontAwesomeIcon icon={faCheck} className="icon" />
-              ) : (
-                <FontAwesomeIcon icon={faXmark} className="icon" />
-              )}
-            </small>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              value={credentials.email}
-              onChange={onChange}
-              autoComplete="off"
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              type={!passShow ? "password" : "text"}
-              className="form-control"
-              id="password"
-              name="password"
-              value={credentials.password}
-              onChange={onChange}
-              autoComplete="off"
-              required
-            />
-          </div>
+    <div className="flex justify-center items-center min-h-screen ">
+      <Card className="w-full max-w-md p-6 rounded-2xl shadow-xl">
+        <CardContent>
+          <h1 className="text-2xl font-bold text-center mb-2">
+            Join WhisperGram
+          </h1>
+          <p className="text-sm text-center mb-6 text-muted-foreground">
+            Sign up to start your whisperous adventure
+          </p>
 
-          <button
-            type="submit"
-            disabled={isAvailable ? false : true}
-            className="btn btn-dark w-100"
-          >
-            Sign Up
-          </button>
-        </form>
-        <p className="text-center mt-3">
-          Already a member?{" "}
-          <span
-            className="text-black"
-            style={{ cursor: "pointer" }}
-            onClick={() => router.push("/login")}
-          >
-            Log In
-          </span>
-        </p>
-      </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <Label htmlFor="username">Username</Label>
+              <div className="relative">
+                <Input
+                  id="username"
+                  name="name"
+                  value={credentials.name}
+                  onChange={onChange}
+                  autoComplete="off"
+                  required
+                />
+                {credentials.name && (
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    {isAvailable ? (
+                      <Check className="text-green-600 w-5 h-5" />
+                    ) : (
+                      <X className="text-red-600 w-5 h-5" />
+                    )}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={credentials.email}
+                onChange={onChange}
+                autoComplete="off"
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type={passShow ? "text" : "password"}
+                value={credentials.password}
+                onChange={onChange}
+                autoComplete="off"
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isAvailable === false}
+              className="w-full"
+            >
+              Sign Up
+            </Button>
+          </form>
+
+          <p className="text-center mt-4 text-sm">
+            Already a member?{" "}
+            <span
+              onClick={() => router.push("/login")}
+              className="text-gray-300 underline cursor-pointer"
+            >
+              Log In
+            </span>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

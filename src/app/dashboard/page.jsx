@@ -5,16 +5,16 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { RefreshCcw } from "lucide-react";
 import Switch from "react-switch";
-import { Spinner } from "react-bootstrap";
-import MessageCard from "src/components/MessageCard";
-import Navbar from "src/components/Navbar";
+import MessageCard from "@/components/MessageCard";
+import { NavbarDemo } from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const [decoded, setDecoded] = useState({});
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
-  const [isAccepting, setIsAccepting] = useState();
+  const [isAccepting, setIsAccepting] = useState(false);
   const [authToken, setAuthToken] = useState("");
   const [profileUrl, setProfileUrl] = useState("");
 
@@ -80,9 +80,9 @@ export default function Dashboard() {
   if (authToken === "") {
     return (
       <>
-        <Navbar />
-        <div className="container p-6 bg-white rounded w-100 mt-4">
-          <h1 className="font-weight-bold mb-4 text-center">
+        <NavbarDemo />
+        <div className="p-6 flex justify-center items-center w-full min-h-[75vh] mt-4">
+          <h1 className="font-bold text-5xl mb-4 text-center text-white">
             It seems you have not logged in yet!! <br />
             Please Login
           </h1>
@@ -92,29 +92,26 @@ export default function Dashboard() {
   } else {
     return (
       <>
-        <Navbar />
-        <div className="container p-6 bg-white rounded w-100 mt-4">
-          <h1 className="font-weight-bold mb-4 text-center">User Dashboard</h1>
-          <div className="mb-4">
-            <h3 className="font-weight-bold mb-3">Copy Your Unique Link</h3>
-            <div className="mb-3 d-flex">
-              <input
-                type="text"
-                className="form-control me-5"
-                value={profileUrl}
-                disabled
-              />
-              <button
-                variant="outline-secondary"
-                className="btn bg-dark text-white"
-                onClick={copyToClipboard}
-              >
+        <NavbarDemo />
+        <div className="px-20 p-6 rounded w-full min-h-[75vh] mt-4 space-y-8 ">
+          <h1 className="font-weight-bold text-4xl font-bold">
+            User Dashboard
+          </h1>
+          <div>
+            <h3 className="font-weight-bold mb-3 text-xl">
+              Copy Your Unique Link
+            </h3>
+            <div className="mb-3 flex items-center gap-8">
+              <div className="rounded-lg px-4 py-2 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50">
+                {profileUrl}
+              </div>
+              <Button variant="outline" onClick={copyToClipboard}>
                 Copy
-              </button>
+              </Button>
             </div>
           </div>
 
-          <div className="mb-4 d-flex">
+          <div className="flex items-center gap-4 pb-4 border-b">
             <Switch
               className="me-3"
               checked={isAccepting}
@@ -122,53 +119,40 @@ export default function Dashboard() {
               disabled={isSwitchLoading}
             />
             <span className="ml-2">
-              Accept Messages: {isAccepting ? "On" : "Off"}
+              {isAccepting ? "Accepting Messages" : "Not Accepting Messages"}
             </span>
           </div>
-          <hr
-            style={{
-              color: "black",
-              backgroundColor: "black",
-              height: 5,
-            }}
-          />
-
-          <button
-            className="mt-4 btn btn-outline-dark h-4 w-4"
-            variant="outline"
-            onClick={(e) => {
-              e.preventDefault();
-              fetchMessages(true);
-            }}
-          >
-            {isLoading ? (
-              <Spinner
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
-              />
-            ) : (
-              <RefreshCcw />
-            )}
-          </button>
-          <div className="mt-4 row">
-            {messages.length > 0 ? (
-              messages.map((message, index) => {
-                return (
-                  <div className="col-12 col-md-6 mb-4" key={index}>
+          <div>
+            <Button
+              className="p-4"
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                fetchMessages(true);
+              }}
+            >
+              {isLoading ? (
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <RefreshCcw />
+              )}
+            </Button>
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              {messages.length > 0 ? (
+                messages.map((message, index) => {
+                  return (
                     <MessageCard
                       authToken={authToken}
                       key={index}
                       message={message}
                       onMessageDelete={handleDeleteMessage}
                     />
-                  </div>
-                );
-              })
-            ) : (
-              <p>No messages to display.</p>
-            )}
+                  );
+                })
+              ) : (
+                <p>No messages to display.</p>
+              )}
+            </div>
           </div>
         </div>
       </>
