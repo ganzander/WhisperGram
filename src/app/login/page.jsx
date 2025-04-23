@@ -71,11 +71,14 @@ export default function Login() {
         <CardContent>
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div className="space-y-1">
-              <Label htmlFor="email">Email</Label>
+              <Label className="cursor-custom" htmlFor="email">
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
+                className="cursor-custom"
                 value={loginCredentials.email}
                 onChange={onChange}
                 autoComplete="off"
@@ -83,8 +86,11 @@ export default function Login() {
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="password">Password</Label>
+              <Label className="cursor-custom" htmlFor="password">
+                Password
+              </Label>
               <Input
+                className="cursor-custom"
                 id="password"
                 name="password"
                 type="password"
@@ -94,20 +100,20 @@ export default function Login() {
                 required
               />
               <p
-                className="mt-2 text-sm text-gray-300 cursor-pointer underline text-end"
+                className="mt-2 text-sm text-gray-300 cursor-custom underline text-end"
                 onClick={() => router.push("/loginOTP")}
               >
                 Forgot Password?
               </p>
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full cursor-custom">
               Log In
             </Button>
           </form>
           <p className="text-center text-sm mt-4">
             Not Registered?{" "}
             <span
-              className="text-gray-300 cursor-pointer underline"
+              className="text-gray-300 cursor-custom underline"
               onClick={() => router.push("/signup")}
             >
               Sign Up

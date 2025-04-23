@@ -89,18 +89,21 @@ export default function LoginViaOTP() {
               </h1>
               <form onSubmit={sendOTP} className="space-y-4">
                 <div className="space-y-1">
-                  <Label htmlFor="email">Email</Label>
+                  <Label className="cursor-custom" htmlFor="email">
+                    Email
+                  </Label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
+                    className="cursor-custom"
                     value={loginCredentials.email}
                     onChange={onChange}
                     autoComplete="off"
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full cursor-custom">
                   Send OTP
                 </Button>
               </form>
@@ -114,23 +117,28 @@ export default function LoginViaOTP() {
               </h1>
               <form onSubmit={verifyOTP} className="space-y-4">
                 <div className="space-y-1">
-                  <Label htmlFor="otp">OTP</Label>
+                  <Label className="cursor-custom" htmlFor="otp">
+                    OTP
+                  </Label>
                   <Input
                     id="otp"
                     name="otp"
                     type="text"
                     value={otp}
+                    className="cursor-custom"
                     onChange={onOTPChange}
                     autoComplete="off"
                     required
                   />
                 </div>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                  <Button type="submit">Verify OTP</Button>
+                  <Button className="cursor-custom" type="submit">
+                    Verify OTP
+                  </Button>
                   <Button
                     onClick={sendOTP}
                     size={"lg"}
-                    className="bg-black text-white hover:bg-gray-950 hover:text-white border"
+                    className="bg-black text-white hover:bg-gray-950 hover:text-white border cursor-custom"
                   >
                     Resend OTP
                   </Button>
@@ -143,7 +151,7 @@ export default function LoginViaOTP() {
             Not Registered?{" "}
             <span
               onClick={() => router.push("/signup")}
-              className="text-gray-300 underline cursor-pointer"
+              className="text-gray-300 underline cursor-custom"
             >
               Sign Up
             </span>

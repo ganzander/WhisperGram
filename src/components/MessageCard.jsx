@@ -66,7 +66,12 @@ export default function MessageCard({ message, onMessageDelete, authToken }) {
             {formattedTimestamp}
           </CardDescription>
         </div>
-        <Button variant="destructive" size="icon" onClick={() => setOpen(true)}>
+        <Button
+          variant="destructive"
+          className="cursor-custom"
+          size="icon"
+          onClick={() => setOpen(true)}
+        >
           <X className="w-4 h-4" />
         </Button>
       </CardHeader>
@@ -82,10 +87,18 @@ export default function MessageCard({ message, onMessageDelete, authToken }) {
             message.
           </div>
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              className="cursor-custom"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm}>
+            <Button
+              className="cursor-custom"
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+            >
               Continue
             </Button>
           </DialogFooter>

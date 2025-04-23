@@ -77,9 +77,12 @@ export default function Signup() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">
-              <Label htmlFor="username">Username</Label>
+              <Label className="cursor-custom" htmlFor="username">
+                Username
+              </Label>
               <div className="relative">
                 <Input
+                  className="cursor-custom"
                   id="username"
                   name="name"
                   value={credentials.name}
@@ -100,8 +103,11 @@ export default function Signup() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="email">Email</Label>
+              <Label className="cursor-custom" htmlFor="email">
+                Email
+              </Label>
               <Input
+                className="cursor-custom"
                 id="email"
                 name="email"
                 type="email"
@@ -113,8 +119,11 @@ export default function Signup() {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="password">Password</Label>
+              <Label className="cursor-custom" htmlFor="password">
+                Password
+              </Label>
               <Input
+                className="cursor-custom"
                 id="password"
                 name="password"
                 type={passShow ? "text" : "password"}
@@ -128,7 +137,7 @@ export default function Signup() {
             <Button
               type="submit"
               disabled={isAvailable === false}
-              className="w-full"
+              className="w-full cursor-custom"
             >
               Sign Up
             </Button>
@@ -138,7 +147,7 @@ export default function Signup() {
             Already a member?{" "}
             <span
               onClick={() => router.push("/login")}
-              className="text-gray-300 underline cursor-pointer"
+              className="text-gray-300 underline cursor-custom"
             >
               Log In
             </span>
